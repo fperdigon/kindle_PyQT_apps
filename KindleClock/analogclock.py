@@ -50,7 +50,7 @@ class PyAnalogClock(QtGui.QWidget):
         timer = QtCore.QTimer(self)
         timer.timeout.connect(self.update)
         timer.timeout.connect(self.updateTime)
-        timer.start(1000)
+        timer.start(60000)
 
         self.setWindowTitle(QtCore.QObject.tr(self, "Analog Clock"))
         self.resize(200, 200)

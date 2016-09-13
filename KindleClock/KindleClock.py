@@ -1,4 +1,6 @@
-__author__ = 'francisco'
+#!/usr/bin/env python
+
+# autor: bosito7 (bosito7@gmail.com)
 
 import KindleClock_UI
 import analogclock
@@ -9,10 +11,26 @@ class Ui_MainWindowImpl(KindleClock_UI.Ui_MainWindow):
 
     def setupUi(self, MainWindow):
 
+        super(Ui_MainWindowImpl, self).setupUi(MainWindow)
+
+        # Colors for menu bar
+
+        self.menubar.setStyleSheet("""QMenuBar::item {
+            background-color: transparent;
+            }
+
+            QMenu {
+            background-color: rgb(250,250,250);
+            }
+
+            QMenu::item::selected {
+                background-color: transparent;
+            }
+        """)
+
         # Variables
 
         # Analog Clock Variables
-        super(Ui_MainWindowImpl, self).setupUi(MainWindow)
         self.AnalogClockWidget = analogclock.PyAnalogClock(self.tab1)
         self.AnalogClockWidget.setGeometry(QtCore.QRect(40, 90, 450, 450))
 
@@ -48,7 +66,7 @@ class Ui_MainWindowImpl(KindleClock_UI.Ui_MainWindow):
         self.pushButton_11.clicked.connect(self.dec_alarm_hour_func)
         self.pushButton_4.clicked.connect(self.inc_alarm_minutes_func)
         self.pushButton_10.clicked.connect(self.dec_alarm_minutes_func)
-        self.pushButton_15.clicked.connect(self.alarm_set)
+        self.pushButton_15.clicked.connect(self.alarm_set_func)
 
         # Chronometer buttons
         self.pushButton.clicked.connect(self.startCH_func)
@@ -91,11 +109,22 @@ class Ui_MainWindowImpl(KindleClock_UI.Ui_MainWindow):
         #self.lcdNumber_6.display(s1)
 
     # Alarm functions
-    def alarm_set(self):
-        # Alarm Timer creation
-        self.timerAL=QtCore.QTimer()
-        self.timerAL.timeout.connect(self.timerAL_func)
-        self.timerAL.start(500)
+    def alarm_set_func(self):
+        if (self.alarm_clear == False):
+            # Alarm Timer creation
+            self.timerAL=QtCore.QTimer()
+            self.timerAL.timeout.connect(self.timerAL_func)
+            self.timerAL.start(1000)
+            self.alarm_clear = True
+            self.pushButton_15.setText("CLEAR")
+        else:
+            self.timerAL.stop()
+            self.alarm_clear = False
+            self.alarm_hour = 0
+            self.alarm_minutes = 0
+            self.alarm_seconds = 0
+            self.alarm_updateUI_func()
+            self.pushButton_15.setText("SET")
 
     def timerAL_func(self):
         """Alarm Timer function"""
@@ -105,9 +134,12 @@ class Ui_MainWindowImpl(KindleClock_UI.Ui_MainWindow):
             self.alarm_hour = 0
             self.alarm_minutes = 0
             self.alarm_seconds = 0
+            self.timerAL.stop()
+            self.alarm_updateUI_func()
+            self.pushButton_15.setText("SET")
 
             QtGui.QMessageBox.about(QtGui.QMainWindow(), "L:A_N:application_ID:KC Alarm Notice",
-                "<H1>Alarm Activated</H1>".decode("utf8"))
+            "<H1>Alarm Activated</H1>".decode("utf8"))
 
     def alarm_updateUI_func(self):
         # Show time in displays
@@ -210,7 +242,7 @@ class Ui_MainWindowImpl(KindleClock_UI.Ui_MainWindow):
             self.chron_minutes = 0
             self.chron_hour = 0
 
-            QtGui.QMessageBox.about(QtGui.QMainWindow(), "L:A_N:application_ID:KC Chronometer Notice",
+            QtGui.QMessageBox.about(QtGui.QMainWindow(), "L:D_N:application_ID:KC Chronometer Notice",
                 "<H1>Chronometer time stored :(</H1>".decode("utf8"))
 
 
@@ -272,7 +304,7 @@ class Ui_MainWindowImpl(KindleClock_UI.Ui_MainWindow):
             self.swatch_hour = 0
             self.swatch_updateUI_func()
             self.pushButton_16.setText("SET")
-            QtGui.QMessageBox.about(QtGui.QMainWindow(), "L:A_N:application_ID:KC StopWatch Notice",
+            QtGui.QMessageBox.about(QtGui.QMainWindow(), "L:D_N:application_ID:KC StopWatch Notice",
                 "<H1>StopWatch time stored :(</H1>".decode("utf8"))
 
     def swatch_updateUI_func(self):
@@ -337,7 +369,7 @@ class Ui_MainWindowImpl(KindleClock_UI.Ui_MainWindow):
         quit()
 
     def actionAbout_KindleClock_func(self):
-        QtGui.QMessageBox.about(QtGui.QMainWindow(), "L:A_N:application_ID:About KindleClock",
+        QtGui.QMessageBox.about(QtGui.QMainWindow(), "L:D_N:application_ID:About KindleClock",
                 "<H3>About KindleClock</H3>"
                 "<br>KindleClock is an application for time jobs, include: "
                 "<br>Analog Clock, Digital Clock, Alarm, Chronometer, StopWatch"
